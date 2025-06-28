@@ -88,12 +88,13 @@ export function useNotes() {
     setError(null);
     try {
       const accessToken = await fetchAccessToken('accessToken');
-      const response = await fetch(`${BASE_URL}/api/journals`, {
+      const response = await fetch(`${BASE_URL}/api/journals/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           // Include any necessary authentication headers here
-          'Authorization': `Bearer ${accessToken}` // Example if using JWT
+          'Authorization': `Bearer ${accessToken}`,
+          'Access-Control-Allow-Origin': '*' // Example if using JWT
         }
       });
       if (!response.ok) {

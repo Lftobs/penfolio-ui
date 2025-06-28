@@ -59,7 +59,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {sampleNotes.slice(0, 6).map((note) => (
             <Link
-              href={`/note/${note.id}`}
+              href={`#`}
               key={note.id}
               className="group relative rounded-3xl shadow-sm overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 aspect-[4/5] bg-white dark:bg-zinc-800"
             >
