@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -22,31 +23,34 @@ export function middleware(request: NextRequest) {
   }
 
   // Check for user authentication token in cookies
-  const userCookie = request.cookies.get('user')
+  const userCookie = cookies().get('user')
+  const accessTokenCookie = cookies().get('accessToken')
+  console.log('User Cookie:', userCookie)
+  console.log('Access Token Cookie:', accessTokenCookie)
   
   // If no user cookie is found, redirect to signin
-  if (!userCookie) {
+  if (accessTokenCookie?.value === undefined) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/signin'
     return NextResponse.redirect(url)
   }
 
   // Try to parse the user data from cookie
-  try {
-    const userData = JSON.parse(userCookie.value)
+  // try {
+  //   const userData = JSON.parse(userCookie?.value)
     
-    // Check if user data has required fields
-    if (!userData.id || !userData.email) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/auth/signin'
-      return NextResponse.redirect(url)
-    }
-  } catch (error) {
-    // If cookie is malformed, redirect to signin
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/signin'
-    return NextResponse.redirect(url)
-  }
+  //   // Check if user data has required fields
+  //   if (!userData.id || !userData.email) {
+  //     const url = request.nextUrl.clone()
+  //     url.pathname = '/auth/signin'
+  //     return NextResponse.redirect(url)
+  //   }
+  // } catch (error) {
+  //   // If cookie is malformed, redirect to signin
+  //   const url = request.nextUrl.clone()
+  //   url.pathname = '/auth/signin'
+  //   return NextResponse.redirect(url)
+  // }
 
   // If authenticated, allow access
   return NextResponse.next()
