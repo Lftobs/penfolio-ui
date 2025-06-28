@@ -94,7 +94,6 @@ export function useNotes() {
           'Content-Type': 'application/json',
           // Include any necessary authentication headers here
           'Authorization': `Bearer ${accessToken}`,
-          'Access-Control-Allow-Origin': '*' // Example if using JWT
         }
       });
       if (!response.ok) {
