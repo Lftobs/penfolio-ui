@@ -25,8 +25,6 @@ export function middleware(request: NextRequest) {
   // Check for user authentication token in cookies
   const userCookie = cookies().get('user')
   const accessTokenCookie = cookies().get('accessToken')
-  console.log('User Cookie:', userCookie)
-  console.log('Access Token Cookie:', accessTokenCookie)
   
   // If no user cookie is found, redirect to signin
   if (accessTokenCookie?.value === undefined) {
