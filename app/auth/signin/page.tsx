@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useContext  } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
+import { useAuth } from '@/app/hooks/useAuth'
 
 export default function SignIn() {
   const router = useRouter()
+  const { login, user } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -21,22 +23,12 @@ export default function SignIn() {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        // Store user data in localStorage (in a real app, you'd use proper session management)
-        localStorage.setItem('user', JSON.stringify(data.user))
-        router.push('/')
+      const loginStatus = login(formData)
+      if (typeof loginStatus === 'string') {
+        setError(loginStatus)
       } else {
-        setError(data.message || 'Sign in failed')
+        console.log('Login successful :', user)
+        router.push('/')
       }
     } catch (error) {
       setError('Network error. Please try again.')

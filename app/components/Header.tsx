@@ -1,64 +1,31 @@
 'use client'
-
+import { useContext } from 'react';
 import Link from 'next/link'
 import { PenLine, Menu, Sun, Moon, User, LogOut } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from './ThemeProvider'
-// Correctly import your server actions
 import { getServerCookie, logout } from '../actions/cookieAction'
+import { AuthContext } from './context/Auth';
+import { useAuth } from '../hooks/useAuth';
 
-// Define the User interface for type safety
-interface User {
-  id: string
-  username: string
-  email: string
-}
+
+
 
 export default function Header(): JSX.Element {
   const { theme, toggleTheme } = useTheme()
   const router = useRouter()
-
-  // --- State Management ---
-  // Initialize user as null. We'll fetch the actual user in an effect.
-  const [user, setUser] = useState<User | null>(null)
-  // Add a loading state to prevent a "flash" of the wrong UI
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false)
-
-  // --- Data Fetching on Component Mount ---
-  useEffect(() => {
-    // Define an async function inside the effect to fetch user data
-    const loadUser = async () => {
-      try {
-        const userCookie = await getServerCookie('user'); // Await the Server Action
-        
-        if (userCookie) {
-          // If a user cookie exists, parse it and update the state
-          setUser(JSON.parse(userCookie) as User);
-        }
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
-        // Ensure user is null if there's an error
-        setUser(null);
-      } finally {
-        // Stop loading once the check is complete
-        setIsLoading(false);
-      }
-    };
-
-    loadUser();
-  }, []); // The empty dependency array [] ensures this runs only once on mount
+  console.log(user, 'user')
 
   // --- Event Handlers ---
   const handleSignOut = async () => {
     try {
-      await logout(); // Call the server action to delete the cookie
-      setUser(null);   // Immediately update the UI by setting user to null
-      setShowUserMenu(false); // Hide the user menu
-      // Use router.push to navigate and trigger a re-render of the page
+      logout()
+      setShowUserMenu(false);
       router.push('/auth/signin');
-      router.refresh(); // Refresh server components on the new page
+      router.refresh();
     } catch (error) {
       console.error('Sign out failed:', error);
     }
@@ -85,11 +52,7 @@ export default function Header(): JSX.Element {
             )}
           </button>
           
-          {/* --- DYNAMIC AUTH SECTION --- */}
-          {isLoading ? (
-            // Show a simple placeholder while checking for the user
-            <div className="h-8 w-24 bg-zinc-200 dark:bg-zinc-700 rounded-lg animate-pulse"></div>
-          ) : user ? (
+          { user != null ? (
             // --- USER IS LOGGED IN ---
             <div className="relative">
               <button
@@ -119,7 +82,6 @@ export default function Header(): JSX.Element {
               )}
             </div>
           ) : (
-            // --- USER IS LOGGED OUT ---
             <div className="flex items-center gap-2">
               <Link
                 href="/auth/signin"
